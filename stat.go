@@ -21,8 +21,8 @@ func Stat(name string) (Timespec, error) {
 }
 
 // Timespec provides access to file times.
-// ChangeTime() panics unless times.HasChangeTime == true
-// BirthTime() panics unless times.HasBirthTime == true
+// ChangeTime() panics unless times.HasChangeTime is true and
+// BirthTime() panics unless times.HasBirthTime is true
 type Timespec interface {
 	ModTime() time.Time
 	AccessTime() time.Time
