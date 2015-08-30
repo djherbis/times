@@ -30,12 +30,12 @@ func main() {
   log.Println(t.AccessTime())
   log.Println(t.ModTime())
 
-  if ct, ok := t.ChangeTime(); ok {
-    log.Println(ct)
+  if times.HasChangeTime {
+    log.Println(t.ChangeTime())
   }
 
-  if bt, ok := t.BirthTime(); ok {
-    log.Println(bt)
+  if times.HasBirthTime {
+    log.Println(t.BirthTime())
   }
 }
 ```

@@ -12,6 +12,13 @@ import (
 	"time"
 )
 
+// HasChangeTime and HasBirthTime are true if and only if
+// the target OS supports them.
+const (
+	HasChangeTime = false
+	HasBirthTime  = true
+)
+
 type timespec struct {
 	atime
 	mtime

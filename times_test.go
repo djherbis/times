@@ -21,16 +21,16 @@ func TestStat(t *testing.T) {
 		t.Error(err.Error())
 	}
 	if at.AccessTime().Before(et) {
-		t.Errorf("expected atime to be recent: got %v instead of ~%v", at, et)
+		t.Errorf("expected atime to be recent: got %v instead of ~%v", at.AccessTime(), et)
 	}
 	if at.ModTime().Before(et) {
-		t.Errorf("expected mtime to be recent: got %v instead of ~%v", at, et)
+		t.Errorf("expected mtime to be recent: got %v instead of ~%v", at.ModTime(), et)
 	}
-	if ct, ok := at.ChangeTime(); ok && ct.Before(et) {
-		t.Errorf("expected ctime to be recent: got %v instead of ~%v", at, et)
+	if HasChangeTime && at.ChangeTime().Before(et) {
+		t.Errorf("expected ctime to be recent: got %v instead of ~%v", at.ChangeTime(), et)
 	}
-	if bt, ok := at.BirthTime(); ok && bt.Before(et) {
-		t.Errorf("expected btime to be recent: got %v instead of ~%v", at, et)
+	if HasBirthTime && at.BirthTime().Before(et) {
+		t.Errorf("expected btime to be recent: got %v instead of ~%v", at.BirthTime(), et)
 	}
 }
 
@@ -49,16 +49,16 @@ func TestGet(t *testing.T) {
 	}
 	at := Get(fi)
 	if at.AccessTime().Before(et) {
-		t.Errorf("expected atime to be recent: got %v instead of ~%v", at, et)
+		t.Errorf("expected atime to be recent: got %v instead of ~%v", at.AccessTime(), et)
 	}
 	if at.ModTime().Before(et) {
-		t.Errorf("expected mtime to be recent: got %v instead of ~%v", at, et)
+		t.Errorf("expected mtime to be recent: got %v instead of ~%v", at.ModTime(), et)
 	}
-	if ct, ok := at.ChangeTime(); ok && ct.Before(et) {
-		t.Errorf("expected ctime to be recent: got %v instead of ~%v", at, et)
+	if HasChangeTime && at.ChangeTime().Before(et) {
+		t.Errorf("expected ctime to be recent: got %v instead of ~%v", at.ChangeTime(), et)
 	}
-	if bt, ok := at.BirthTime(); ok && bt.Before(et) {
-		t.Errorf("expected btime to be recent: got %v instead of ~%v", at, et)
+	if HasBirthTime && at.BirthTime().Before(et) {
+		t.Errorf("expected btime to be recent: got %v instead of ~%v", at.BirthTime(), et)
 	}
 }
 
@@ -80,8 +80,14 @@ func TestCheat(t *testing.T) {
 	b.BirthTime()
 
 	var nc noctime
-	nc.ChangeTime()
+	func() {
+		defer func() { recover() }()
+		nc.ChangeTime()
+	}()
 
 	var nb nobtime
-	nb.BirthTime()
+	func() {
+		defer func() { recover() }()
+		nb.BirthTime()
+	}()
 }
