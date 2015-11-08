@@ -74,20 +74,28 @@ func TestCheat(t *testing.T) {
 	// this allows us to get 100% test coverage for platforms which do not have
 	// ChangeTime/BirthTime
 	var c ctime
-	c.ChangeTime()
+	if c.HasChangeTime() {
+		c.ChangeTime()
+	}
 
 	var b btime
-	b.BirthTime()
+	if b.HasBirthTime() {
+		b.BirthTime()
+	}
 
 	var nc noctime
 	func() {
-		defer func() { recover() }()
+		if !nc.HasChangeTime() {
+			defer func() { recover() }()
+		}
 		nc.ChangeTime()
 	}()
 
 	var nb nobtime
 	func() {
-		defer func() { recover() }()
+		if !nb.HasBirthTime() {
+			defer func() { recover() }()
+		}
 		nb.BirthTime()
 	}()
 }
