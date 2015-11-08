@@ -30,11 +30,11 @@ func main() {
   log.Println(t.AccessTime())
   log.Println(t.ModTime())
 
-  if times.HasChangeTime {
+  if t.HasChangeTime() {
     log.Println(t.ChangeTime())
   }
 
-  if times.HasBirthTime {
+  if t.HasBirthTime() {
     log.Println(t.BirthTime())
   }
 }
@@ -46,8 +46,12 @@ Supported Times
 |:-----:|:-------:|:-----:|:-------:|:---------:|:------:|:-------:|:----:|:------:|:-------:|:-----:|
 | atime | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | mtime | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ctime |  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |
+| ctime | ✓* | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |
 | btime | ✓ |  |  |  |  | ✓ |  ✓| ✓ |  
+
+* Windows XP does not have ChangeTime so HasChangeTime = false, 
+however Vista onward does have ChangeTime so Timespec.HasChangeTime() will 
+only return false on those platforms when the syscall used to obtain them fails.
 
 Installation
 ------------

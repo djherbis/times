@@ -54,10 +54,10 @@ func TestGet(t *testing.T) {
 	if at.ModTime().Before(et) {
 		t.Errorf("expected mtime to be recent: got %v instead of ~%v", at.ModTime(), et)
 	}
-	if HasChangeTime && at.ChangeTime().Before(et) {
+	if at.HasChangeTime() && at.ChangeTime().Before(et) {
 		t.Errorf("expected ctime to be recent: got %v instead of ~%v", at.ChangeTime(), et)
 	}
-	if HasBirthTime && at.BirthTime().Before(et) {
+	if at.HasBirthTime() && at.BirthTime().Before(et) {
 		t.Errorf("expected btime to be recent: got %v instead of ~%v", at.BirthTime(), et)
 	}
 }
