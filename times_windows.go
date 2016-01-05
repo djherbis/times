@@ -27,10 +27,6 @@ type timespec struct {
 }
 
 func getTimespec(fi os.FileInfo) Timespec {
-	if ts, err := statEx(fi.Name()); err == nil {
-		return ts
-	}
-
 	var t timespec
 	stat := fi.Sys().(*syscall.Win32FileAttributeData)
 	t.atime.v = time.Unix(0, stat.LastAccessTime.Nanoseconds())

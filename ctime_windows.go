@@ -29,13 +29,13 @@ func StatFile(file *os.File) (Timespec, error) {
 	return t, nil
 }
 
-func statEx(file string) (Timespec, error) {
+func Stat(name string) (Timespec, error) {
 	if findProcErr != nil {
 		// fail fast, don't bother opening the file
 		return nil, findProcErr
 	}
 
-	f, err := os.Open(file)
+	f, err := os.Open(name)
 	if err != nil {
 		return nil, err
 	}
