@@ -11,6 +11,21 @@ func Get(fi os.FileInfo) Timespec {
 	return getTimespec(fi)
 }
 
+// Stat returns the Timespec for the given filename.
+func Stat(name string) (Timespec, error) {
+	if hasPlatformSpecificStat {
+		if ts, err := platformSpecficStat(name); err == nil {
+			return ts, nil
+		}
+	}
+
+	fi, err := os.Stat(name)
+	if err != nil {
+		return nil, err
+	}
+	return getTimespec(fi), nil
+}
+
 // Timespec provides access to file times.
 // ChangeTime() panics unless HasChangeTime() is true and
 // BirthTime() panics unless HasBirthTime() is true.

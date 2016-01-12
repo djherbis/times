@@ -16,8 +16,12 @@ type timespecEx struct {
 
 // StatFile finds a Windows Timespec with ChangeTime.
 func StatFile(file *os.File) (Timespec, error) {
+	return statFile(syscall.Handle(file.Fd()))
+}
+
+func statFile(h syscall.Handle) (Timespec, error) {
 	var fileInfo fileBasicInfo
-	if err := getFileInformationByHandleEx(syscall.Handle(file.Fd()), &fileInfo); err != nil {
+	if err := getFileInformationByHandleEx(h, &fileInfo); err != nil {
 		return nil, err
 	}
 
@@ -29,9 +33,10 @@ func StatFile(file *os.File) (Timespec, error) {
 	return t, nil
 }
 
-func Stat(name string) (Timespec, error) {
+const hasPlatformSpecificStat = true
+
+func platformSpecficStat(name string) (Timespec, error) {
 	if findProcErr != nil {
-		// fail fast, don't bother opening the file
 		return nil, findProcErr
 	}
 
@@ -40,7 +45,8 @@ func Stat(name string) (Timespec, error) {
 		return nil, err
 	}
 	defer f.Close()
-	return StatFile(f)
+
+	return statFile(syscall.Handle(f.Fd()))
 }
 
 var (
