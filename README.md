@@ -52,6 +52,7 @@ Supported Times
 * Windows XP does not have ChangeTime so HasChangeTime = false, 
 however Vista onward does have ChangeTime so Timespec.HasChangeTime() will 
 only return false on those platforms when the syscall used to obtain them fails.
+* Also note, Get(FileInfo) will now only return values available in FileInfo.Sys(), this means Stat() is required to get ChangeTime on Windows
 
 Installation
 ------------
