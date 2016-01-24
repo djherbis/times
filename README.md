@@ -2,6 +2,7 @@ times
 ==========
 
 [![GoDoc](https://godoc.org/github.com/djherbis/times?status.svg)](https://godoc.org/github.com/djherbis/times)
+[![Release](https://img.shields.io/github/release/djherbis/atime.svg)](https://github.com/djherbis/atime/releases/latest)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.txt)
 [![Build Status](https://travis-ci.org/djherbis/times.svg?branch=master)](https://travis-ci.org/djherbis/times)
 [![Coverage Status](https://coveralls.io/repos/djherbis/times/badge.svg?branch=master)](https://coveralls.io/r/djherbis/times?branch=master)
