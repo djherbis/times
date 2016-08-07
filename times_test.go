@@ -12,7 +12,7 @@ func TestStat(t *testing.T) {
 		if err != nil {
 			t.Error(err.Error())
 		}
-		timespecTest(ts, newInterval(time.Now(), 50*time.Millisecond), t)
+		timespecTest(ts, newInterval(time.Now(), time.Second), t)
 	})
 }
 
@@ -22,7 +22,7 @@ func TestGet(t *testing.T) {
 		if err != nil {
 			t.Error(err.Error())
 		}
-		timespecTest(Get(fi), newInterval(time.Now(), 50*time.Millisecond), t)
+		timespecTest(Get(fi), newInterval(time.Now(), time.Second), t)
 	})
 }
 
