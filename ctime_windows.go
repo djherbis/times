@@ -40,13 +40,19 @@ func platformSpecficStat(name string) (Timespec, error) {
 		return nil, findProcErr
 	}
 
-	f, err := os.Open(name)
-	if err != nil {
-		return nil, err
+	pathp, e := syscall.UTF16PtrFromString(name)
+	if e != nil {
+		return nil, e
 	}
-	defer f.Close()
+	h, e := syscall.CreateFile(pathp,
+		syscall.FILE_WRITE_ATTRIBUTES, syscall.FILE_SHARE_WRITE, nil,
+		syscall.OPEN_EXISTING, syscall.FILE_FLAG_BACKUP_SEMANTICS, 0)
+	if e != nil {
+		return nil, e
+	}
+	defer syscall.Close(h)
 
-	return statFile(syscall.Handle(f.Fd()))
+	return statFile(h)
 }
 
 var (
