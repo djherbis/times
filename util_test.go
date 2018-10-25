@@ -3,6 +3,8 @@ package times
 import (
 	"io/ioutil"
 	"os"
+	"reflect"
+	"runtime"
 	"testing"
 	"time"
 )
@@ -31,20 +33,28 @@ func fileTest(t testing.TB, testFunc func(f *os.File)) {
 	testFunc(f)
 }
 
-func timespecTest(ts Timespec, r timeRange, t testing.TB) {
-	if !r.Contains(ts.AccessTime()) {
-		t.Errorf("expected %s to be in range: %s\n", ts.AccessTime(), r.start)
+type timeFetcher func(Timespec) time.Time
+
+func timespecTest(ts Timespec, r timeRange, t testing.TB, getTimes ...timeFetcher) {
+	if len(getTimes) == 0 {
+		getTimes = append(getTimes, Timespec.AccessTime, Timespec.ModTime)
+
+		if ts.HasChangeTime() {
+			getTimes = append(getTimes, Timespec.ChangeTime)
+		}
+
+		if ts.HasBirthTime() {
+			getTimes = append(getTimes, Timespec.BirthTime)
+		}
 	}
 
-	if !r.Contains(ts.ModTime()) {
-		t.Errorf("expected %s to be in range: %s\n", ts.ModTime(), r.start)
+	for _, getTime := range getTimes {
+		if !r.Contains(getTime(ts)) {
+			t.Errorf("expected %s=%s to be in range: \n[%s, %s]\n", GetFunctionName(getTime), getTime(ts), r.start, r.end)
+		}
 	}
+}
 
-	if ts.HasChangeTime() && !r.Contains(ts.ChangeTime()) {
-		t.Errorf("expected %s to be in range: %s\n", ts.ChangeTime(), r.start)
-	}
-
-	if ts.HasBirthTime() && !r.Contains(ts.BirthTime()) {
-		t.Errorf("expected %s to be in range: %s\n", ts.BirthTime(), r.start)
-	}
+func GetFunctionName(i interface{}) string {
+	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
