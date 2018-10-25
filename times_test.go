@@ -47,6 +47,7 @@ func testStatSymlink(sf tsFunc, expectTime time.Time, t *testing.T) {
 		if err := os.Symlink(f.Name(), symname); err != nil {
 			t.Error(err.Error())
 		}
+		defer os.Remove(symname)
 
 		// modify the realFileTime so symlink and real file see diff values.
 		realFileTime := start.Add(offsetTime)
