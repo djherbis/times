@@ -16,7 +16,7 @@ func main() {
 		tempFile()
 
 	default:
-		printTimes(os.Args[0])
+		printTimes(os.Args[1])
 	}
 }
 
