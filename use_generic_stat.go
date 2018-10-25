@@ -8,3 +8,7 @@ const hasPlatformSpecificStat = false
 func platformSpecficStat(name string) (Timespec, error) {
 	return nil, nil
 }
+
+func platformSpecficLstat(name string) (Timespec, error) {
+	return nil, nil
+}

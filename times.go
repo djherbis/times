@@ -11,6 +11,19 @@ func Get(fi os.FileInfo) Timespec {
 	return getTimespec(fi)
 }
 
+type statFunc func(string) (os.FileInfo, error)
+
+// Lstat returns the Timespec for the given filename, and does not follow Symlinks.
+func Lstat(name string) (Timespec, error) {
+	if hasPlatformSpecificStat {
+		if ts, err := platformSpecficLstat(name); err == nil {
+			return ts, nil
+		}
+	}
+
+	return stat(name, os.Lstat)
+}
+
 // Stat returns the Timespec for the given filename.
 func Stat(name string) (Timespec, error) {
 	if hasPlatformSpecificStat {
@@ -19,7 +32,11 @@ func Stat(name string) (Timespec, error) {
 		}
 	}
 
-	fi, err := os.Stat(name)
+	return stat(name, os.Stat)
+}
+
+func stat(name string, sf statFunc) (Timespec, error) {
+	fi, err := sf(name)
 	if err != nil {
 		return nil, err
 	}

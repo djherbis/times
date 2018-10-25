@@ -27,3 +27,30 @@ func BenchmarkStat(t *testing.B) {
 	})
 	t.ReportAllocs()
 }
+
+func BenchmarkLstat(t *testing.B) {
+	fileTest(t, func(f *os.File) {
+		for i := 0; i < t.N; i++ {
+			Lstat(f.Name())
+		}
+	})
+	t.ReportAllocs()
+}
+
+func BenchmarkOsStat(t *testing.B) {
+	fileTest(t, func(f *os.File) {
+		for i := 0; i < t.N; i++ {
+			os.Stat(f.Name())
+		}
+	})
+	t.ReportAllocs()
+}
+
+func BenchmarkOsLstat(t *testing.B) {
+	fileTest(t, func(f *os.File) {
+		for i := 0; i < t.N; i++ {
+			os.Lstat(f.Name())
+		}
+	})
+	t.ReportAllocs()
+}
