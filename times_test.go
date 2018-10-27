@@ -70,6 +70,13 @@ func TestStatErr(t *testing.T) {
 	}
 }
 
+func TestLstatErr(t *testing.T) {
+	_, err := Lstat("badfile?")
+	if err == nil {
+		t.Error("expected an error")
+	}
+}
+
 func TestCheat(t *testing.T) {
 	// not all times are available for all platforms
 	// this allows us to get 100% test coverage for platforms which do not have

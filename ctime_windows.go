@@ -7,6 +7,26 @@ import (
 	"unsafe"
 )
 
+// Stat returns the Timespec for the given filename.
+func Stat(name string) (Timespec, error) {
+	ts, err := platformSpecficStat(name)
+	if err == nil {
+		return ts, err
+	}
+
+	return stat(name, os.Stat)
+}
+
+// Lstat returns the Timespec for the given filename, and does not follow Symlinks.
+func Lstat(name string) (Timespec, error) {
+	ts, err := platformSpecficLstat(name)
+	if err == nil {
+		return ts, err
+	}
+
+	return stat(name, os.Lstat)
+}
+
 type timespecEx struct {
 	atime
 	mtime
@@ -32,8 +52,6 @@ func statFile(h syscall.Handle) (Timespec, error) {
 	t.btime.v = time.Unix(0, fileInfo.CreationTime.Nanoseconds())
 	return t, nil
 }
-
-const hasPlatformSpecificStat = true
 
 func platformSpecficLstat(name string) (Timespec, error) {
 	if findProcErr != nil {
