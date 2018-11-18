@@ -1,4 +1,8 @@
 language: go
+os:
+  - linux
+  - osx
+  - windows
 go:
 - tip
 before_install:
@@ -8,7 +12,7 @@ before_install:
 - if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover;
   fi
 script:
-- '[ "${TRAVIS_PULL_REQUEST}" != "false" ] || $HOME/gopath/bin/goveralls -service=travis-ci
+- '[ "${TRAVIS_PULL_REQUEST}" != "false" ] || ([[ "$TRAVIS_OS_NAME" == "linux" ]] && $HOME/gopath/bin/goveralls -service=travis-ci))
   -repotoken $COVERALLS_TOKEN'
 - "$HOME/gopath/bin/golint ./..."
 - go vet
