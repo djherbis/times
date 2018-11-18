@@ -4,7 +4,7 @@ os:
   - osx
   - windows
 go:
-- tip
+- 1.11
 before_install:
 - go get -u golang.org/x/lint/golint
 - go get github.com/axw/gocov/gocov
