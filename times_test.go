@@ -8,8 +8,8 @@ import (
 )
 
 func TestStat(t *testing.T) {
-	fileTest(t, func(f *os.File) {
-		ts, err := Stat(f.Name())
+	fileAndDirTest(t, func(name string) {
+		ts, err := Stat(name)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -18,8 +18,8 @@ func TestStat(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	fileTest(t, func(f *os.File) {
-		fi, err := os.Stat(f.Name())
+	fileAndDirTest(t, func(name string) {
+		fi, err := os.Stat(name)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -40,18 +40,18 @@ func TestLstatSymlink(t *testing.T) {
 }
 
 func testStatSymlink(sf tsFunc, expectTime time.Time, t *testing.T) {
-	fileTest(t, func(f *os.File) {
+	fileAndDirTest(t, func(name string) {
 		start := time.Now()
 
-		symname := filepath.Join(filepath.Dir(f.Name()), "sym-"+filepath.Base(f.Name()))
-		if err := os.Symlink(f.Name(), symname); err != nil {
+		symname := filepath.Join(filepath.Dir(name), "sym-"+filepath.Base(name))
+		if err := os.Symlink(name, symname); err != nil {
 			t.Error(err.Error())
 		}
 		defer os.Remove(symname)
 
 		// modify the realFileTime so symlink and real file see diff values.
 		realFileTime := start.Add(offsetTime)
-		if err := os.Chtimes(f.Name(), realFileTime, realFileTime); err != nil {
+		if err := os.Chtimes(name, realFileTime, realFileTime); err != nil {
 			t.Error(err.Error())
 		}
 

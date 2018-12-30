@@ -49,11 +49,11 @@ func TestStatBadNameErr(t *testing.T) {
 }
 
 func TestStatProcErrFallback(t *testing.T) {
-	fileTest(t, func(f *os.File) {
+	fileAndDirTest(t, func(name string) {
 		findProcErr = errors.New("fake error")
 		defer func() { findProcErr = nil }()
 
-		ts, err := Stat(f.Name())
+		ts, err := Stat(name)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -62,11 +62,11 @@ func TestStatProcErrFallback(t *testing.T) {
 }
 
 func TestLstatProcErrFallback(t *testing.T) {
-	fileTest(t, func(f *os.File) {
+	fileAndDirTest(t, func(name string) {
 		findProcErr = errors.New("fake error")
 		defer func() { findProcErr = nil }()
 
-		ts, err := Lstat(f.Name())
+		ts, err := Lstat(name)
 		if err != nil {
 			t.Error(err.Error())
 		}
