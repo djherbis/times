@@ -7,8 +7,6 @@ script() {
         COVERALLS_PARALLEL=true
         go get github.com/axw/gocov/gocov github.com/mattn/goveralls get golang.org/x/tools/cmd/cover
         $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN
-
-        
     fi
 
     if [ "$TRAVIS_OS_NAME" != "windows" ];
