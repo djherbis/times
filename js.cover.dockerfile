@@ -6,4 +6,4 @@ RUN apt-get install --yes nodejs
 WORKDIR /go/src/github.com/djherbis/times
 COPY . .
 
-RUN GOOS=js GOARCH=wasm go test -covermode=count -coverprofile=profile.cov.js -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec"
+RUN GOOS=js GOARCH=wasm go test -covermode=count -coverprofile=profile.cov -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec"
