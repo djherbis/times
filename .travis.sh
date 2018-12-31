@@ -11,8 +11,7 @@ script() {
         # add js coverage
         if [ "$TRAVIS_OS_NAME" == "linux" ];
         then
-            export PATH="$PATH:$(go env GOROOT)/misc/wasm"
-            GOOS=js GOARCH=wasm go test -covermode=count -coverprofile=profile.cov
+            bash js.cover.sh
             $HOME/gopath/bin/goveralls -coverprofile=profile.cov -service=travis-ci -repotoken $COVERALLS_TOKEN
         fi
     fi
