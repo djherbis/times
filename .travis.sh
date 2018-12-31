@@ -9,11 +9,11 @@ script() {
         if [ ! -z "$JS" ];
         then
             bash js.cover.sh
-        else
-            go get github.com/axw/gocov/gocov github.com/mattn/goveralls golang.org/x/tools/cmd/cover
+        else    
             go test -covermode=count -coverprofile=profile.cov
         fi
 
+        go get github.com/axw/gocov/gocov github.com/mattn/goveralls golang.org/x/tools/cmd/cover
         $HOME/gopath/bin/goveralls --coverprofile=profile.cov -service=travis-ci -repotoken $COVERALLS_TOKEN
     fi
 
