@@ -11,7 +11,8 @@ matrix:
           go: 1.11
         - os: windows
           go: 1.11
-          filter_secets: false # temp. workaround allowing windows to have secure env vars
+          # temp. workaround allowing windows to have secure env vars
+          filter_secets: false
 script: bash .travis.sh script
 notifications:
   webhooks: https://coveralls.io/webhook
