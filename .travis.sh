@@ -9,12 +9,8 @@ script() {
         $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN
     fi
 
-    if [ "$TRAVIS_OS_NAME" != "windows" ];
-    then
-        go get golang.org/x/lint/golint && golint ./...
-        go vet
-    fi
-
+    go get golang.org/x/lint/golint && golint ./...
+    go vet
     go test -bench=.* -v ./...
 }
 
