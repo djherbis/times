@@ -2,7 +2,7 @@
 set -e
 
 script() {
-    if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ ! -z "$COVERALLS_TOKEN" ];
+    if [ "${TRAVIS_PULL_REQUEST}" == "false" ];
     then
         COVERALLS_PARALLEL=true
 
@@ -14,7 +14,7 @@ script() {
         fi
 
         go get github.com/axw/gocov/gocov github.com/mattn/goveralls golang.org/x/tools/cmd/cover
-        $HOME/gopath/bin/goveralls --coverprofile=profile.cov -service=travis-ci -repotoken $COVERALLS_TOKEN
+        $HOME/gopath/bin/goveralls --coverprofile=profile.cov -service=travis-ci
     fi
 
     if [ -z "$JS" ];
