@@ -6,14 +6,16 @@ script() {
     then
         COVERALLS_PARALLEL=true
         go get github.com/axw/gocov/gocov github.com/mattn/goveralls golang.org/x/tools/cmd/cover
-        $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN
+        go test -covermode=count -coverprofile=profile.cov
 
         # add js coverage
         if [ "$TRAVIS_OS_NAME" == "linux" ];
         then
             bash js.cover.sh
-            $HOME/gopath/bin/goveralls -coverprofile=profile.cov -service=travis-ci -repotoken $COVERALLS_TOKEN
         fi
+
+        PROFILES=`ls -dm profile.cov*`
+        $HOME/gopath/bin/goveralls -coverprofile="$PROFILES" -service=travis-ci -repotoken $COVERALLS_TOKEN
     fi
 
     go get golang.org/x/lint/golint && golint ./...

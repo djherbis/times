@@ -13,6 +13,7 @@ matrix:
           go: 1.11
 script: bash .travis.sh script
 notifications:
+  webhooks: https://coveralls.io/webhook
   email:
     on_success: never
     on_failure: change
