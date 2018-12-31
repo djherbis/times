@@ -15,6 +15,7 @@ script() {
         fi
 
         PROFILES=`ls -dm profile.cov*`
+        PROFILES=${PROFILES// /}
         $HOME/gopath/bin/goveralls -coverprofile="$PROFILES" -service=travis-ci -repotoken $COVERALLS_TOKEN
     fi
 
