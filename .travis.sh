@@ -2,14 +2,14 @@
 set -e
 
 script() {
-    if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "$TRAVIS_OS_NAME" != "windows" ];
+    if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ ! -z "$COVERALLS_TOKEN" ];
     then
         COVERALLS_PARALLEL=true
 
         if [ ! -z "$JS" ];
         then
             bash js.cover.sh
-        else    
+        else
             go test -covermode=count -coverprofile=profile.cov
         fi
 
