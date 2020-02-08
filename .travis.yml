@@ -10,7 +10,7 @@ matrix:
         - os: osx
           go: tip
         - os: windows
-          go: 1.13
+          go: 1.x
 script: bash .travis.sh script
 notifications:
   webhooks: https://coveralls.io/webhook
