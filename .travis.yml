@@ -2,15 +2,15 @@ language: go
 matrix:
     include:
         - os: linux
-          go: 1.11
+          go: tip
         - os: linux
-          go: 1.11
+          go: tip
           env:
             - JS=1
         - os: osx
-          go: 1.11
+          go: tip
         - os: windows
-          go: 1.11
+          go: tip
 script: bash .travis.sh script
 notifications:
   webhooks: https://coveralls.io/webhook
