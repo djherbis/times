@@ -21,7 +21,7 @@ package main
 import (
   "log"
 
-  "gopkg.in/djherbis/times.v1"
+  "github.com/djherbis/times"
 )
 
 func main() {
@@ -60,5 +60,5 @@ only return false on those platforms when the syscall used to obtain them fails.
 Installation
 ------------
 ```sh
-go get gopkg.in/djherbis/times.v1
+go get -u github.com/djherbis/times
 ```
