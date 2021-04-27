@@ -19,6 +19,15 @@ func BenchmarkGet(t *testing.B) {
 	t.ReportAllocs()
 }
 
+func BenchmarkStatFile(t *testing.B) {
+	fileTest(t, func(f *os.File) {
+		for i := 0; i < t.N; i++ {
+			StatFile(f)
+		}
+	})
+	t.ReportAllocs()
+}
+
 func BenchmarkStat(t *testing.B) {
 	fileTest(t, func(f *os.File) {
 		for i := 0; i < t.N; i++ {

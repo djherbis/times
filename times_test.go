@@ -27,6 +27,27 @@ func TestGet(t *testing.T) {
 	})
 }
 
+func TestStatFile(t *testing.T) {
+	fileTest(t, func(f *os.File) {
+		ts, err := StatFile(f)
+		if err != nil {
+			t.Error(err.Error())
+		}
+		timespecTest(ts, newInterval(time.Now(), time.Second), t)
+	})
+}
+
+func TestStatFileErr(t *testing.T) {
+	fileTest(t, func(f *os.File) {
+		f.Close()
+
+		_, err := StatFile(f)
+		if err == nil {
+			t.Error("got nil err, but err was expected!")
+		}
+	})
+}
+
 type tsFunc func(string) (Timespec, error)
 
 var offsetTime = -10 * time.Second

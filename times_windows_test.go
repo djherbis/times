@@ -8,27 +8,6 @@ import (
 	"time"
 )
 
-func TestStatFile(t *testing.T) {
-	fileTest(t, func(f *os.File) {
-		ts, err := StatFile(f)
-		if err != nil {
-			t.Error(err.Error())
-		}
-		timespecTest(ts, newInterval(time.Now(), time.Second), t)
-	})
-}
-
-func TestStatFileErr(t *testing.T) {
-	fileTest(t, func(f *os.File) {
-		f.Close()
-
-		_, err := StatFile(f)
-		if err == nil {
-			t.Error("got nil err, but err was expected!")
-		}
-	})
-}
-
 func TestStatFileProcErr(t *testing.T) {
 	fileTest(t, func(f *os.File) {
 		findProcErr = errors.New("fake error")

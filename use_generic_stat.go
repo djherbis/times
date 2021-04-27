@@ -13,3 +13,12 @@ func Stat(name string) (Timespec, error) {
 func Lstat(name string) (Timespec, error) {
 	return stat(name, os.Lstat)
 }
+
+// StatFile returns the Timespec for the given *os.File.
+func StatFile(file *os.File) (Timespec, error) {
+	fi, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	return getTimespec(fi), nil
+}
