@@ -4,7 +4,7 @@ matrix:
         - os: linux
           go: tip
         - os: linux
-          go: tip
+          go: 1.x
           env:
             - JS=1
         - os: osx
@@ -13,10 +13,10 @@ matrix:
           go: 1.x
 #Added power jobs
         - os: linux
-          go: tip
+          go: 1.x
           arch: ppc64le
         - os: linux
-          go: tip
+          go: 1.x
           arch: ppc64le
           env:
             - JS=1
