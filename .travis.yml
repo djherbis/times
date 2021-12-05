@@ -2,13 +2,13 @@ language: go
 matrix:
     include:
         - os: linux
-          go: tip
+          go: 1.17.x
         - os: linux
           go: 1.17.x
           env:
             - JS=1
         - os: osx
-          go: tip
+          go: 1.17.x
         - os: windows
           go: 1.17.x
 #Added power jobs
