@@ -14,6 +14,7 @@ jobs:
       - id: go-test
         uses: djherbis/actions/go-test@main
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           coveralls_parallel: true
   buildjs:
     runs-on: ubuntu-latest
