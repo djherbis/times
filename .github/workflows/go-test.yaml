@@ -19,21 +19,8 @@ jobs:
   buildjs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - id: go-test-js
+        uses: djherbis/actions/go-test-js@main
         with:
-          go-version: '1.17.x'
-      - name: go test
-        env:
-          GOOS: js
-          GOARCH: wasm
-          GO111MODULE: auto
-        run: go test -covermode=count -coverprofile=profile.cov -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec"
-      - name: Send coverage
-        env:
-          COVERALLS_PARALLEL: true
-          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          go install github.com/mattn/goveralls@latest
-          goveralls -coverprofile=profile.cov -service=github
-        if: github.event_name != 'pull_request'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          coveralls_parallel: true
