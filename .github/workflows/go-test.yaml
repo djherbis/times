@@ -24,3 +24,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           coveralls_parallel: true
+  finish:
+      needs: [build, buildjs]
+      runs-on: ubuntu-latest
+      steps:
+      - name: Coveralls Finished
+        run: |
+          curl https://coveralls.io/webhook?repo_token=${{ secrets.coveralls }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
