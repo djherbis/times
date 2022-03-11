@@ -35,5 +35,5 @@ jobs:
           COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           go install github.com/mattn/goveralls@latest
-          goveralls -coverprofile=covprofile -service=github
+          goveralls -coverprofile=profile.cov -service=github
         if: github.event_name != 'pull_request'
