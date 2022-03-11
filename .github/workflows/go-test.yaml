@@ -11,8 +11,8 @@ jobs:
       matrix:
         os: [ubuntu-latest,  windows-latest, macos-latest]
     uses: djherbis/actions/.github/workflows/go-test.yml@main
-    env:
-      COVERALLS_PARALLEL: true
+    with:
+      coveralls_parallel: true
   buildjs:
     runs-on: ubuntu-latest
     steps:
