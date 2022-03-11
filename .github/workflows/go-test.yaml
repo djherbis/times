@@ -10,9 +10,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest,  windows-latest, macos-latest]
-    uses: djherbis/actions/go-test@main
-    with:
-      coveralls_parallel: true
+    steps:
+      - id: go-test
+        uses: djherbis/actions/go-test@main
+        with:
+          coveralls_parallel: true
   buildjs:
     runs-on: ubuntu-latest
     steps:
