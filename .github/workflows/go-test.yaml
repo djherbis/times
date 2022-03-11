@@ -11,7 +11,7 @@ jobs:
       matrix:
         os: [ubuntu-latest,  windows-latest, macos-latest]
     steps:
-      call-workflow:
+      - name: go test
         env:
           COVERALLS_PARALLEL: true
         uses: djherbis/actions/.github/workflows/go-test.yml@main
