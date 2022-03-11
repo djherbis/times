@@ -28,6 +28,6 @@ jobs:
       needs: [build, buildjs]
       runs-on: ubuntu-latest
       steps:
-      - name: Coveralls Finished
-        run: |
-          curl https://coveralls.io/webhook?repo_token=${{ secrets.coveralls }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
+        - uses: shogo82148/actions-goveralls@v1
+          with:
+            parallel-finished: true
