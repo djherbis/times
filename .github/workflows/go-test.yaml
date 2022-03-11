@@ -1,0 +1,37 @@
+name: go test
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest,  windows-latest, macos-latest]
+    steps:
+      runs-on: ${{ matrix.os }}
+      env:
+        COVERALLS_PARALLEL: true
+      call-workflow:
+        uses: djherbis/actions/.github/workflows/go-test.yml@main
+  buildjs:
+    steps:
+      runs-on: ubuntu-latest
+      env:
+        COVERALLS_PARALLEL: true
+        GOOS: js
+        GOARCH: warm
+        GO111MODULE: auto
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+      - run: go test -covermode=count -coverprofile=profile.cov -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec"
+      - name: Send coverage
+        env:
+          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          go install github.com/mattn/goveralls@latest
+          goveralls -coverprofile=covprofile -service=github
+        if: github.event_name != 'pull_request'
