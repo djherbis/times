@@ -11,9 +11,9 @@ jobs:
       matrix:
         os: [ubuntu-latest,  windows-latest, macos-latest]
         js: [false]
-      include:
-        os: ubuntu-latest
-        js: true
+        include:
+          - os: ubuntu-latest
+            js: true
     steps:
       - id: go-test
         uses: djherbis/actions/go-test@main
