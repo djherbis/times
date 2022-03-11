@@ -25,7 +25,7 @@ jobs:
       - name: go test
         env:
           GOOS: js
-          GOARCH: warm
+          GOARCH: wasm
           GO111MODULE: auto
         run: go test -covermode=count -coverprofile=profile.cov -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec"
       - name: Send coverage
