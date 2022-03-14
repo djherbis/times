@@ -4,7 +4,7 @@ times
 [![GoDoc](https://godoc.org/github.com/djherbis/times?status.svg)](https://godoc.org/github.com/djherbis/times)
 [![Release](https://img.shields.io/github/release/djherbis/times.svg)](https://github.com/djherbis/times/releases/latest)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.txt)
-[![Build Status](https://travis-ci.org/djherbis/times.svg?branch=master)](https://travis-ci.org/djherbis/times)
+[![go test](https://github.com/djherbis/times/actions/workflows/go-test.yml/badge.svg)](https://github.com/djherbis/times/actions/workflows/go-test.yml)
 [![Coverage Status](https://coveralls.io/repos/djherbis/times/badge.svg?branch=master)](https://coveralls.io/r/djherbis/times?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/djherbis/times)](https://goreportcard.com/report/github.com/djherbis/times)
 [![Sourcegraph](https://sourcegraph.com/github.com/djherbis/times/-/badge.svg)](https://sourcegraph.com/github.com/djherbis/times?badge)
