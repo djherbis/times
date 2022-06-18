@@ -50,8 +50,11 @@ Supported Times
 | atime | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | mtime | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | ctime | ✓* | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ | ✓ |
-| btime | ✓ |  |  |  |  | ✓ |  ✓| ✓ |  |  |
+| btime | ✓ | ✓* |  |  |  | ✓ |  ✓| ✓ |  |  |
 
+* Linux btime requires kernel 4.11 and filesystem support, so HasBirthTime = false.
+Use Timespec.HasBirthTime() to check if file has birth time.
+Get(FileInfo) never returns btime.
 * Windows XP does not have ChangeTime so HasChangeTime = false, 
 however Vista onward does have ChangeTime so Timespec.HasChangeTime() will 
 only return false on those platforms when the syscall used to obtain them fails.
