@@ -9,7 +9,7 @@ package times
 import (
 	"errors"
 	"os"
-	"runtime"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -37,57 +37,78 @@ type timespecBtime struct {
 	btime
 }
 
+var supportsStatx int64 = 1
+
 // Stat returns the Timespec for the given filename.
 func Stat(name string) (Timespec, error) {
-	var statx unix.Statx_t
+	if atomic.LoadInt64(&supportsStatx) == 1 {
+		var statx unix.Statx_t
 
-	err := unix.Statx(unix.AT_FDCWD, name, unix.AT_EMPTY_PATH|unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
-	if err != nil {
-		//linux 4.10 and earlier does not support Statx syscall
-		if errors.Is(err, unix.ENOSYS) {
-			return stat(name, os.Stat)
+		//https://man7.org/linux/man-pages/man2/statx.2.html
+		err := unix.Statx(unix.AT_FDCWD, name, unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
+		if err != nil {
+			//linux 4.10 and earlier does not support Statx syscall
+			if errors.Is(err, unix.ENOSYS) {
+				atomic.StoreInt64(&supportsStatx, 0)
+				return stat(name, os.Stat)
+			}
+			return nil, err
 		}
-		return nil, err
+		return extractTimes(&statx), nil
 	}
 
-	return extractTimes(&statx), nil
+	return stat(name, os.Stat)
 }
 
 // Lstat returns the Timespec for the given filename, and does not follow Symlinks.
 func Lstat(name string) (Timespec, error) {
-	var statX unix.Statx_t
+	if atomic.LoadInt64(&supportsStatx) == 1 {
+		var statX unix.Statx_t
 
-	err := unix.Statx(unix.AT_FDCWD, name, unix.AT_EMPTY_PATH|unix.AT_STATX_SYNC_AS_STAT|unix.AT_SYMLINK_NOFOLLOW, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statX)
-	if err != nil {
-		//linux 4.10 and earlier does not support Statx syscall
-		if errors.Is(err, unix.ENOSYS) {
-			return stat(name, os.Lstat)
+		//https://man7.org/linux/man-pages/man2/statx.2.html
+		err := unix.Statx(unix.AT_FDCWD, name, unix.AT_STATX_SYNC_AS_STAT|unix.AT_SYMLINK_NOFOLLOW, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statX)
+		if err != nil {
+			//linux 4.10 and earlier does not support Statx syscall
+			if errors.Is(err, unix.ENOSYS) {
+				atomic.StoreInt64(&supportsStatx, 0)
+				return stat(name, os.Lstat)
+			}
+			return nil, err
 		}
-		return nil, err
+		return extractTimes(&statX), nil
 	}
 
-	return extractTimes(&statX), nil
+	return stat(name, os.Lstat)
 }
 
 // StatFile returns the Timespec for the given *os.File.
 func StatFile(file *os.File) (Timespec, error) {
-	var statx unix.Statx_t
+	if atomic.LoadInt64(&supportsStatx) == 1 {
+		var statx unix.Statx_t
 
-	err := unix.Statx(int(file.Fd()), "", unix.AT_EMPTY_PATH|unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
-	if err != nil {
-		//linux 4.10 and earlier does not support Statx syscall
-		if errors.Is(err, unix.ENOSYS) {
-			fi, err := file.Stat()
-			if err != nil {
-				return nil, err
+		//https://man7.org/linux/man-pages/man2/statx.2.html
+		err := unix.Statx(int(file.Fd()), "", unix.AT_EMPTY_PATH|unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
+		if err != nil {
+			//linux 4.10 and earlier does not support Statx syscall
+			if errors.Is(err, unix.ENOSYS) {
+				atomic.StoreInt64(&supportsStatx, 0)
+				fi, err := file.Stat()
+				if err != nil {
+					return nil, err
+				}
+				return getTimespec(fi), nil
 			}
-			return getTimespec(fi), nil
+			return nil, err
 		}
-		return nil, err
+
+		return extractTimes(&statx), nil
 	}
 
-	runtime.KeepAlive(file)
-	return extractTimes(&statx), nil
+	fi, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	return getTimespec(fi), nil
 }
 
 func statxTimestampToTime(ts unix.StatxTimestamp) time.Time {
