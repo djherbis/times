@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+  schedule:
+    - cron: '0 17 * * 1'  # https://crontab.guru/#0_17_*_*_1
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
