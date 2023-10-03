@@ -66,19 +66,19 @@ func testStatSymlink(sf tsFunc, expectTime time.Time, t *testing.T) {
 
 		symname := filepath.Join(filepath.Dir(name), "sym-"+filepath.Base(name))
 		if err := os.Symlink(name, symname); err != nil {
-			t.Error(err.Error())
+			t.Fatal(err.Error())
 		}
 		defer os.Remove(symname)
 
 		// modify the realFileTime so symlink and real file see diff values.
 		realFileTime := start.Add(offsetTime)
 		if err := os.Chtimes(name, realFileTime, realFileTime); err != nil {
-			t.Error(err.Error())
+			t.Fatal(err.Error())
 		}
 
 		ts, err := sf(symname)
 		if err != nil {
-			t.Error(err.Error())
+			t.Fatal(err.Error())
 		}
 		timespecTest(ts, newInterval(expectTime, time.Second), t, Timespec.AccessTime, Timespec.ModTime)
 	})

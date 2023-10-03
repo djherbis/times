@@ -37,85 +37,113 @@ type timespecBtime struct {
 	btime
 }
 
-var supportsStatx int32 = 1
+var (
+	supportsStatx int32 = 1
+	statxFunc           = unix.Statx
+)
+
+func isStatXSupported() bool {
+	return atomic.LoadInt32(&supportsStatx) == 1
+}
+
+func isStatXUnsupported(err error) bool {
+	// linux 4.10 and earlier does not support Statx syscall
+	if err != nil && errors.Is(err, unix.ENOSYS) {
+		atomic.StoreInt32(&supportsStatx, 0)
+		return true
+	}
+	return false
+}
 
 // Stat returns the Timespec for the given filename.
 func Stat(name string) (Timespec, error) {
-	if atomic.LoadInt32(&supportsStatx) == 1 {
-		var statx unix.Statx_t
-
-		//https://man7.org/linux/man-pages/man2/statx.2.html
-		err := unix.Statx(unix.AT_FDCWD, name, unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
-		if err != nil {
-			//linux 4.10 and earlier does not support Statx syscall
-			if errors.Is(err, unix.ENOSYS) {
-				atomic.StoreInt32(&supportsStatx, 0)
-				return stat(name, os.Stat)
-			}
+	if isStatXSupported() {
+		ts, err := statX(name)
+		if err == nil {
+			return ts, nil
+		}
+		if !isStatXUnsupported(err) {
 			return nil, err
 		}
-		return extractTimes(&statx), nil
+		// Fallback.
 	}
-
 	return stat(name, os.Stat)
+}
+
+func statX(name string) (Timespec, error) {
+	// https://man7.org/linux/man-pages/man2/statx.2.html
+	var statx unix.Statx_t
+	err := statxFunc(unix.AT_FDCWD, name, unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
+	if err != nil {
+		return nil, err
+	}
+	return extractTimes(&statx), nil
 }
 
 // Lstat returns the Timespec for the given filename, and does not follow Symlinks.
 func Lstat(name string) (Timespec, error) {
-	if atomic.LoadInt32(&supportsStatx) == 1 {
-		var statX unix.Statx_t
-		//https://man7.org/linux/man-pages/man2/statx.2.html
-
-		err := unix.Statx(unix.AT_FDCWD, name, unix.AT_STATX_SYNC_AS_STAT|unix.AT_SYMLINK_NOFOLLOW, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statX)
-		if err != nil {
-			//linux 4.10 and earlier does not support Statx syscall
-			if errors.Is(err, unix.ENOSYS) {
-				atomic.StoreInt32(&supportsStatx, 0)
-				return stat(name, os.Lstat)
-			}
+	if isStatXSupported() {
+		ts, err := lstatx(name)
+		if err == nil {
+			return ts, nil
+		}
+		if !isStatXUnsupported(err) {
 			return nil, err
 		}
-		return extractTimes(&statX), nil
+		// Fallback.
+	}
+	return stat(name, os.Lstat)
+}
+
+func lstatx(name string) (Timespec, error) {
+	// https://man7.org/linux/man-pages/man2/statx.2.html
+	var statX unix.Statx_t
+	err := statxFunc(unix.AT_FDCWD, name, unix.AT_STATX_SYNC_AS_STAT|unix.AT_SYMLINK_NOFOLLOW, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statX)
+	if err != nil {
+		return nil, err
+	}
+	return extractTimes(&statX), nil
+}
+
+func statXFile(file *os.File) (Timespec, error) {
+	sc, err := file.SyscallConn()
+	if err != nil {
+		return nil, err
 	}
 
-	return stat(name, os.Lstat)
+	var statx unix.Statx_t
+	var statxErr error
+	err = sc.Control(func(fd uintptr) {
+		// https://man7.org/linux/man-pages/man2/statx.2.html
+		statxErr = statxFunc(int(fd), "", unix.AT_EMPTY_PATH|unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if statxErr != nil {
+		return nil, statxErr
+	}
+
+	return extractTimes(&statx), nil
 }
 
 // StatFile returns the Timespec for the given *os.File.
 func StatFile(file *os.File) (Timespec, error) {
-	if atomic.LoadInt32(&supportsStatx) == 1 {
-		var statx unix.Statx_t
-
-		sc, err := file.SyscallConn()
-		if err != nil {
+	if isStatXSupported() {
+		ts, err := statXFile(file)
+		if err == nil {
+			return ts, nil
+		}
+		if !isStatXUnsupported(err) {
 			return nil, err
 		}
-
-		var statxErr error
-		err = sc.Control(func(fd uintptr) {
-			statxErr = unix.Statx(int(fd), "", unix.AT_EMPTY_PATH|unix.AT_STATX_SYNC_AS_STAT, unix.STATX_ATIME|unix.STATX_MTIME|unix.STATX_CTIME|unix.STATX_BTIME, &statx)
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		//https://man7.org/linux/man-pages/man2/statx.2.html
-		if statxErr != nil {
-			//linux 4.10 and earlier does not support Statx syscall
-			if errors.Is(statxErr, unix.ENOSYS) {
-				atomic.StoreInt32(&supportsStatx, 0)
-				fi, err := file.Stat()
-				if err != nil {
-					return nil, err
-				}
-				return getTimespec(fi), nil
-			}
-			return nil, statxErr
-		}
-
-		return extractTimes(&statx), nil
+		// Fallback.
 	}
+	return statFile(file)
+}
 
+func statFile(file *os.File) (Timespec, error) {
 	fi, err := file.Stat()
 	if err != nil {
 		return nil, err
