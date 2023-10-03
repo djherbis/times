@@ -39,10 +39,10 @@ func unsupportedStatx(dirfd int, path string, flags int, mask int, stat *unix.St
 	return unix.ENOSYS
 }
 
-var badStatxErr = errors.New("bad")
+var errBadStatx = errors.New("bad")
 
 func badStatx(dirfd int, path string, flags int, mask int, stat *unix.Statx_t) (err error) {
-	return badStatxErr
+	return errBadStatx
 }
 
 func fakeSupportedStatx(ts *unix.Statx_t) statxFuncTyp {
@@ -68,7 +68,7 @@ func TestStatx(t *testing.T) {
 		{name: "unsupported", statx: unsupportedStatx},
 		{name: "fake supported with btime", statx: fakeSupportedStatx(statxT(time.Now(), true))},
 		{name: "fake supported without btime", statx: fakeSupportedStatx(statxT(time.Now(), false))},
-		{name: "bad stat", statx: badStatx, wantErr: badStatxErr},
+		{name: "bad stat", statx: badStatx, wantErr: errBadStatx},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
